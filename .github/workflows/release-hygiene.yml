@@ -1,0 +1,81 @@
+name: Release Hygiene
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+concurrency:
+  group: release-hygiene-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  branch-policy:
+    name: Branch Policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enforce repository merge flow
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          case "$BASE_REF" in
+            main)
+              if [ "$HEAD_REF" != "dev" ]; then
+                echo "::error::Only dev may merge into main. Found $HEAD_REF -> $BASE_REF."
+                exit 1
+              fi
+              ;;
+            dev)
+              if [[ "$HEAD_REF" != feature/* ]]; then
+                echo "::error::Only feature/* branches may merge into dev. Found $HEAD_REF -> $BASE_REF."
+                exit 1
+              fi
+              ;;
+          esac
+
+  tag-policy:
+    name: Tag Policy
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate tag format and version alignment
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tags must use vMAJOR.MINOR.PATCH. Found $TAG_NAME."
+            exit 1
+          fi
+
+          PACKAGE_VERSION="$(node --print "require('./package.json').version")"
+          if [ "$PACKAGE_VERSION" != "${TAG_NAME#v}" ]; then
+            echo "::error::package.json version ($PACKAGE_VERSION) does not match tag $TAG_NAME."
+            exit 1
+          fi
+
+      - name: Ensure tag points to main
+        env:
+          TAG_SHA: ${{ github.sha }}
+        run: |
+          git fetch --no-tags origin main
+          if ! git branch --remotes --contains "$TAG_SHA" | grep -q 'origin/main'; then
+            echo "::error::Release tags must point to a commit reachable from origin/main."
+            exit 1
+          fi

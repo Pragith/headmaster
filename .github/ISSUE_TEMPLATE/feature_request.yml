@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose an improvement to Headmaster
+title: "[feature] "
+labels: ["kind/feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: textarea
+    id: operator
+    attributes:
+      label: Operator impact
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration impact
+      description: Note any new environment variables, default changes, or auth/runtime assumptions

@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+CMD="${1:-help}"
+
+ensure_env() {
+  if [ ! -f .env ]; then
+    cp .env.example .env
+  fi
+}
+
+generate_secret() {
+  python3 - <<'PY'
+import secrets
+print(secrets.token_urlsafe(48))
+PY
+}
+
+doctor() {
+  local failed=0
+  for binary in docker git; do
+    if ! command -v "$binary" >/dev/null 2>&1; then
+      echo "Missing dependency: $binary"
+      failed=1
+    fi
+  done
+
+  if ! docker compose version >/dev/null 2>&1; then
+    echo "Missing dependency: docker compose"
+    failed=1
+  fi
+
+  if [ ! -f .env ]; then
+    echo ".env missing"
+    failed=1
+  fi
+
+  if [ "$failed" -ne 0 ]; then
+    exit 1
+  fi
+
+  echo "doctor: ok"
+}
+
+case "$CMD" in
+  env:init)
+    ensure_env
+    if ! grep -q '^HEADMASTER_SESSION_SECRET=' .env || grep -q 'replace-with-a-long-random-secret' .env; then
+      secret="$(generate_secret)"
+      python3 - "$secret" <<'PY'
+from pathlib import Path
+import sys
+secret = sys.argv[1]
+path = Path(".env")
+text = path.read_text()
+text = text.replace("HEADMASTER_SESSION_SECRET=replace-with-a-long-random-secret", f"HEADMASTER_SESSION_SECRET={secret}")
+path.write_text(text)
+PY
+    fi
+    mkdir -p .data
+    echo "env:init complete"
+    ;;
+  doctor)
+    doctor
+    ;;
+  up)
+    ensure_env
+    docker compose up -d --build
+    ;;
+  down)
+    docker compose down
+    ;;
+  build)
+    docker compose build
+    ;;
+  logs)
+    docker compose logs -f "${2:-headmaster}"
+    ;;
+  ps|status)
+    docker compose ps
+    ;;
+  pull)
+    git pull --ff-only
+    ;;
+  help|*)
+    cat <<'EOF'
+headmaster commands:
+  env:init   create .env if needed and generate a session secret
+  doctor     verify local prerequisites
+  up         build and start the stack
+  down       stop the stack
+  build      build the Docker image
+  logs       stream compose logs
+  ps         show compose status
+  pull       update the local checkout
+EOF
+    ;;
+esac

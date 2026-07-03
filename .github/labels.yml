@@ -1,0 +1,21 @@
+- name: kind/bug
+  color: d73a4a
+  description: Something is not working correctly
+- name: kind/feature
+  color: 0e8a16
+  description: New functionality or product scope
+- name: kind/docs
+  color: 0052cc
+  description: Documentation work
+- name: area/auth
+  color: 5319e7
+  description: OIDC and session handling
+- name: area/ui
+  color: 1d76db
+  description: Frontend and UX
+- name: area/headscale
+  color: fbca04
+  description: Headscale adapter and command execution
+- name: release/blocker
+  color: b60205
+  description: Must be resolved before the next release

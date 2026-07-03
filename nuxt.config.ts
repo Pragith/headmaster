@@ -1,0 +1,50 @@
+export default defineNuxtConfig({
+  devtools: { enabled: false },
+  compatibilityDate: '2024-11-01',
+  css: ['~/assets/css/main.css'],
+  modules: ['@nuxtjs/tailwindcss'],
+  tailwindcss: {
+    configPath: 'tailwind.config.ts',
+    exposeConfig: false,
+  },
+  runtimeConfig: {
+    headmaster: {
+      appName: process.env.HEADMASTER_APP_NAME || 'Headmaster',
+      publicBaseUrl: process.env.HEADMASTER_PUBLIC_BASE_URL || 'http://localhost:41869',
+      sessionSecret: process.env.HEADMASTER_SESSION_SECRET || '',
+      authEnabled: process.env.HEADMASTER_AUTH_ENABLED !== 'false',
+      authIssuer: process.env.HEADMASTER_AUTH_ISSUER || '',
+      authClientId: process.env.HEADMASTER_AUTH_CLIENT_ID || '',
+      authClientSecret: process.env.HEADMASTER_AUTH_CLIENT_SECRET || '',
+      authRedirectUri: process.env.HEADMASTER_AUTH_REDIRECT_URI || '',
+      authScope: process.env.HEADMASTER_AUTH_SCOPE || 'openid profile email',
+      authAdminGroup: process.env.HEADMASTER_AUTH_ADMIN_GROUP || '',
+      authGroupsClaim: process.env.HEADMASTER_AUTH_GROUPS_CLAIM || 'groups',
+      authNameClaim: process.env.HEADMASTER_AUTH_NAME_CLAIM || 'name',
+      authEmailClaim: process.env.HEADMASTER_AUTH_EMAIL_CLAIM || 'email',
+      execMode: process.env.HEADMASTER_HEADSCALE_EXEC_MODE || 'docker',
+      dockerBin: process.env.HEADMASTER_HEADSCALE_DOCKER_BIN || 'docker',
+      headscaleContainer: process.env.HEADMASTER_HEADSCALE_CONTAINER || 'headscale',
+      headscaleBinary: process.env.HEADMASTER_HEADSCALE_BINARY || 'headscale',
+      headscaleConfig: process.env.HEADMASTER_HEADSCALE_CONFIG || '/etc/headscale/config.yaml',
+      headscaleConfigFile: process.env.HEADMASTER_HEADSCALE_CONFIG_FILE || '',
+      headscalePublicUrl: process.env.HEADMASTER_HEADSCALE_PUBLIC_URL || '',
+      auditLogPath: process.env.HEADMASTER_AUDIT_LOG_PATH || '',
+      readOnly: process.env.HEADMASTER_READ_ONLY === 'true',
+    },
+    public: {
+      headmasterAppName: process.env.HEADMASTER_APP_NAME || 'Headmaster',
+      headmasterPublicBaseUrl: process.env.HEADMASTER_PUBLIC_BASE_URL || 'http://localhost:41869',
+      headmasterReadOnly: process.env.HEADMASTER_READ_ONLY === 'true',
+    },
+  },
+  nitro: {
+    routeRules: {
+      '/api/**': { cors: false },
+    },
+  },
+  typescript: {
+    strict: true,
+    shim: false,
+  },
+})

@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - main
+      - dev
+      - feature/**
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+  PNPM_VERSION: 10.28.1
+  NODE_VERSION: 22
+
+jobs:
+  app:
+    name: App Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check Nuxt app
+        run: pnpm exec nuxi typecheck
+
+      - name: Build production bundle
+        run: pnpm build
+
+  e2e:
+    name: Browser Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build production bundle
+        run: pnpm build
+
+      - name: Start app for smoke tests
+        env:
+          HEADMASTER_AUTH_ENABLED: "false"
+          HEADMASTER_PUBLIC_BASE_URL: http://127.0.0.1:41869
+          HEADMASTER_SESSION_SECRET: ci-session-secret
+          NITRO_HOST: 127.0.0.1
+          NITRO_PORT: 41869
+        run: |
+          node .output/server/index.mjs > /tmp/headmaster-e2e.log 2>&1 &
+          echo $! > /tmp/headmaster-e2e.pid
+
+      - name: Wait for app to become healthy
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:41869/api/healthz > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "App never became healthy"
+          cat /tmp/headmaster-e2e.log
+          exit 1
+
+      - name: Run Playwright smoke suite
+        env:
+          HEADMASTER_E2E_BASE_URL: http://127.0.0.1:41869
+        run: pnpm test:e2e
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/headmaster-e2e.log
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f /tmp/headmaster-e2e.pid ]; then
+            kill "$(cat /tmp/headmaster-e2e.pid)" || true
+          fi
+
+  compose:
+    name: Docker Compose Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create CI runtime files
+        run: |
+          mkdir -p .data
+          cat <<'EOF' > .env
+          HEADMASTER_AUTH_ENABLED=false
+          HEADMASTER_PUBLIC_BASE_URL=http://127.0.0.1:41869
+          HEADMASTER_SESSION_SECRET=ci-session-secret
+          EOF
+
+      - name: Validate Compose file
+        run: docker compose config
+
+      - name: Build and start Compose stack
+        run: docker compose up --build --detach
+
+      - name: Wait for Compose app to become healthy
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:41869/api/healthz > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Compose app never became healthy"
+          docker compose logs --no-color
+          exit 1
+
+      - name: Print Compose logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Tear down Compose stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans

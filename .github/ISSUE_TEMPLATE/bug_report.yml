@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a defect in Headmaster
+title: "[bug] "
+labels: ["kind/bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Docker, auth provider, Headscale mode, version details, and any relevant non-secret configuration context
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior

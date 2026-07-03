@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --hm-bg: #f6f3ec;
+  --hm-panel: #ffffff;
+  --hm-border: #d8d0c1;
+  --hm-border-strong: #aa9f8b;
+  --hm-text: #18130c;
+  --hm-muted: #746b5b;
+  --hm-soft: #eee8dc;
+  --hm-primary: #2453d4;
+  --hm-danger: #bd2d1f;
+  --hm-warning: #a86209;
+  --hm-success: #087365;
+  --hm-ink: #18130c;
+  --hm-accent: #ffb84d;
+  --hm-accent-soft: #fff0d4;
+}
+
+html,
+body {
+  min-height: 100vh;
+  background: var(--hm-bg);
+  color: var(--hm-text);
+}
+
+body {
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 12% -10%, rgb(255 184 77 / 22%), transparent 32rem),
+    radial-gradient(circle at 90% 0%, rgb(36 83 212 / 12%), transparent 28rem),
+    linear-gradient(180deg, #fbf7ef 0%, var(--hm-bg) 48%, #f7f4ee 100%);
+}
+
+.page-shell {
+  @apply mx-auto w-full max-w-[1440px] px-4 py-4 lg:px-8;
+}
+
+.hm-shell {
+  @apply min-w-0 space-y-5;
+}
+
+.hm-topbar {
+  @apply grid min-h-14 grid-cols-1 gap-3 border-b pb-4 md:grid-cols-[1fr_auto_1fr] md:items-center;
+  border-color: color-mix(in srgb, var(--hm-border) 75%, transparent);
+}
+
+.hm-brand {
+  @apply text-base font-semibold;
+  color: var(--hm-text);
+}
+
+.hm-brand-lockup {
+  @apply flex items-center gap-2;
+}
+
+.hm-brand-mark {
+  @apply grid h-7 w-7 place-items-center rounded-sm text-xs font-semibold;
+  background: linear-gradient(135deg, var(--hm-ink), #344054);
+  color: var(--hm-accent);
+  box-shadow: inset 0 -1px 0 rgb(255 255 255 / 12%);
+}
+
+.hm-nav {
+  @apply flex flex-wrap items-center gap-1 justify-self-start md:justify-self-center;
+}
+
+.hm-nav-link {
+  @apply rounded-sm px-3 py-2 text-sm font-medium transition-colors;
+  color: var(--hm-muted);
+}
+
+.hm-nav-link-active {
+  background: var(--hm-ink);
+  color: #fffaf0;
+}
+
+.hm-nav-link:hover {
+  background: rgb(24 19 12 / 6%);
+  color: var(--hm-text);
+}
+
+.hm-nav-link-active:hover {
+  background: var(--hm-ink);
+  color: #fffaf0;
+}
+
+.hm-actions {
+  @apply flex flex-wrap items-center gap-2 md:justify-self-end;
+}
+
+.hm-page-header {
+  @apply flex flex-col gap-3 md:flex-row md:items-center md:justify-between;
+}
+
+.hm-eyebrow {
+  @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em];
+  color: var(--hm-muted);
+}
+
+.hm-title {
+  @apply text-2xl font-semibold tracking-[-0.025em];
+  color: var(--hm-text);
+}
+
+.hm-subtitle {
+  @apply text-sm;
+  color: var(--hm-muted);
+}
+
+.hm-panel {
+  @apply overflow-hidden rounded-md border bg-white;
+  border-color: var(--hm-border);
+  box-shadow: 0 1px 0 rgb(24 19 12 / 4%), 0 18px 48px rgb(52 64 84 / 7%);
+}
+
+.hm-panel-header {
+  @apply flex flex-wrap items-center gap-x-5 gap-y-2 border-b px-4 py-3 text-sm;
+  border-color: var(--hm-border);
+  background: linear-gradient(90deg, var(--hm-accent-soft), #fff 28%, #fff);
+  color: var(--hm-muted);
+}
+
+.hm-button {
+  @apply inline-flex h-9 items-center justify-center rounded-sm border bg-white px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  border-color: var(--hm-border-strong);
+  color: var(--hm-text);
+}
+
+.hm-button-sm {
+  @apply h-8 px-2.5 text-xs;
+}
+
+.hm-button-primary {
+  border-color: var(--hm-ink);
+  background: var(--hm-ink);
+  color: #fffaf0;
+}
+
+.hm-button:hover {
+  background: rgb(24 19 12 / 5%);
+}
+
+.hm-button-primary:hover {
+  background: #2a241b;
+  color: #fffaf0;
+}
+
+.hm-button-danger {
+  @apply hover:bg-red-50;
+  border-color: #efc8c2;
+  color: var(--hm-danger);
+}
+
+.hm-button-warning {
+  @apply hover:bg-amber-50;
+  border-color: #ecd3a1;
+  color: var(--hm-warning);
+}
+
+.hm-input,
+.hm-textarea {
+  @apply w-full rounded-sm border bg-white px-3 py-2 text-sm outline-none transition focus:ring-2;
+  border-color: var(--hm-border-strong);
+  color: var(--hm-text);
+  --tw-ring-color: rgb(255 184 77 / 35%);
+}
+
+.hm-textarea {
+  @apply resize-y;
+}
+
+.hm-checkbox {
+  @apply h-4 w-4 rounded-sm;
+  border-color: var(--hm-border-strong);
+  color: var(--hm-ink);
+}
+
+.hm-label {
+  @apply text-sm font-medium;
+  color: var(--hm-text);
+}
+
+.hm-field {
+  @apply space-y-1.5;
+}
+
+.hm-status {
+  @apply inline-flex h-6 items-center rounded-sm border px-2 text-xs font-medium;
+  border-color: var(--hm-border);
+  background: color-mix(in srgb, var(--hm-soft) 70%, white);
+  color: var(--hm-muted);
+}
+
+.hm-status-success {
+  @apply border-emerald-200 bg-emerald-50;
+  color: var(--hm-success);
+}
+
+.hm-status-muted {
+  color: var(--hm-muted);
+}
+
+.hm-status-warning {
+  @apply border-amber-200 bg-amber-50;
+  color: var(--hm-warning);
+}
+
+.hm-table-wrap {
+  @apply overflow-x-auto;
+}
+
+.hm-table {
+  @apply w-full border-collapse text-left;
+}
+
+.hm-table th {
+  @apply border-b px-3 py-2 text-xs font-medium uppercase tracking-[0.12em];
+  border-color: var(--hm-border);
+  background: #f7f1e6;
+  color: var(--hm-muted);
+}
+
+.hm-table td {
+  @apply border-b px-3 py-2.5 text-sm;
+  border-color: #eee5d6;
+  color: #3f372d;
+}
+
+.hm-table tr:hover td {
+  background: #fff8ea;
+}
+
+.hm-dialog {
+  @apply fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4;
+}
+
+.hm-dialog-open {
+  @apply flex;
+}
+
+.hm-dialog-panel {
+  @apply w-full max-w-lg rounded-md border bg-white p-5 shadow-xl;
+  border-color: var(--hm-border);
+}
+
+.hm-dialog-actions {
+  @apply mt-5 flex justify-end gap-2;
+}
+
+.hm-code {
+  @apply overflow-x-auto whitespace-pre-wrap rounded-sm border p-3 font-mono text-xs;
+  border-color: var(--hm-border);
+  background: #191510;
+  color: #fff7e8;
+}
