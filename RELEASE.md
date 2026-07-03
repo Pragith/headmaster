@@ -25,7 +25,7 @@ This project uses Semantic Versioning and annotated Git tags in the form `vMAJOR
 ## Helper
 
 ```bash
-./scripts/release.sh 0.1.0
+./scripts/release.sh 0.1.1
 ```
 
 This script validates the version, creates an annotated tag, and prints the push command.

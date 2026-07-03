@@ -11,7 +11,7 @@ Headmaster is a modular, `.env`-driven admin UI for Headscale. It is built to st
 
 ## Status
 
-- Current version: `0.1.0`
+- Current version: `0.1.1`
 - Release model: SemVer
 - Runtime model: Docker Compose first
 - Auth model: OIDC with admin-group enforcement

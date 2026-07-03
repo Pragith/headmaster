@@ -2,6 +2,21 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   compatibilityDate: '2024-11-01',
   css: ['~/assets/css/main.css'],
+  app: {
+    head: {
+      title: 'Headmaster',
+      meta: [
+        { name: 'theme-color', content: '#081a3a' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
+      ],
+    },
+  },
   modules: ['@nuxtjs/tailwindcss'],
   tailwindcss: {
     configPath: 'tailwind.config.ts',

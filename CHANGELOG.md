@@ -8,6 +8,14 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 
 No unreleased changes.
 
+## [0.1.1] - 2026-07-03
+
+### Changed
+
+- Replaced the header placeholder mark with the shipped Headmaster logo asset.
+- Added the favicon, touch icon, manifest, and browser theme metadata from the release asset pack.
+- Preserved runtime `.env` loading in Docker while keeping live env files out of the image build context.
+
 ## [0.1.0] - 2026-07-03
 
 ### Added

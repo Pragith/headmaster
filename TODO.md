@@ -33,3 +33,4 @@
 
 - [x] Add a release helper script and tag workflow notes.
 - [x] Cut and publish the first public release tag after live verification and push.
+- [x] Ship the branded logo and favicon pack in a patch release.

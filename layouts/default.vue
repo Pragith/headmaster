@@ -4,7 +4,7 @@
       <div class="hm-shell">
         <header class="hm-topbar">
           <div class="hm-brand-lockup">
-            <span class="hm-brand-mark">HM</span>
+            <img src="/headmaster-logo.png" alt="Headmaster" class="hm-brand-logo" />
             <p class="hm-brand">{{ appName }}</p>
             <span v-if="readOnly" class="hm-status hm-status-warning">Read only</span>
           </div>

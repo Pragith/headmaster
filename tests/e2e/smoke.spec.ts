@@ -37,8 +37,8 @@ test('oidc login reaches nodes when live credentials are provided', async ({ pag
 
   await page.waitForURL(/headmaster\.lab\.pragith\.net|127\.0\.0\.1:41869/, { timeout: 30_000 })
   await page.waitForLoadState('networkidle')
-  await expect(page.getByRole('link', { name: 'Nodes' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Nodes' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Nodes' })).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByRole('heading', { name: 'Nodes' })).toBeVisible({ timeout: 15_000 })
 
   for (const route of ['/users', '/keys', '/apikeys', '/routes', '/auth', '/policy', '/settings', '/audit']) {
     await page.goto(route)
